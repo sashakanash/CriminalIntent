@@ -24,7 +24,6 @@ class CrimeFragment : Fragment() {
     private lateinit var titleField: EditText
     private lateinit var dateButton: Button
     private lateinit var solvedCheckBox: CheckBox
-
     private val crimeDetailViewModel: CrimeDetailViewModel by lazy {
         ViewModelProvider(this)[CrimeDetailViewModel::class.java]
     }
@@ -36,38 +35,42 @@ class CrimeFragment : Fragment() {
         val crimeId:UUID = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arguments?.getSerializable(ARG_CRIME_ID, UUID::class.java) as UUID
         } else {
+            @Suppress("DEPRECATION")
             arguments?.getSerializable(ARG_CRIME_ID) as UUID
         }
         crimeDetailViewModel.loadCrime(crimeId)
-
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,savedInstanceState: Bundle?): View?
     {
         val view = inflater.inflate(R.layout.fragment_crime,container, false)
-        titleField = view.findViewById(R.id.crime_title) as EditText
-        dateButton =  view.findViewById(R.id.crime_date) as Button
-        solvedCheckBox = view.findViewById(R.id.crime_solved) as CheckBox
+        titleField = view.findViewById(R.id.crime_title)
+        dateButton = view.findViewById(R.id.crime_date)
 
         dateButton.apply {
             text = crime.date.toString()
             isEnabled = false
         }
+        solvedCheckBox = view.findViewById(R.id.crime_solved)
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         crimeDetailViewModel.crimeLiveData.observe(
-            viewLifecycleOwner
-        )
+            viewLifecycleOwner)
         { crime ->
             crime?.let {
                 this.crime = crime
                 updateUI()
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        crimeDetailViewModel.saveCrime(crime)
     }
 
     private fun updateUI(){
