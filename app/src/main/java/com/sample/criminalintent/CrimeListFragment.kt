@@ -67,7 +67,9 @@ class CrimeListFragment: Fragment() {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 when (menuItem.itemId){
                     R.id.new_crime -> {
-                        crimeListViewModel.addCrime(Crime())
+                        val crime = Crime()
+                        crimeListViewModel.addCrime(crime)
+                        callbacks?.onCrimeSelected(crime.id)
                     }
                 }
                 return true
