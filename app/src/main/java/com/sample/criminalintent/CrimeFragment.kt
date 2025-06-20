@@ -17,6 +17,7 @@ import java.util.UUID
 
 private const val TAG = "CrimeFragment"
 private const val ARG_CRIME_ID = "crime_id"
+private const val DIALOG_DATE = "dialog_date"
 
 class CrimeFragment : Fragment() {
 
@@ -101,6 +102,11 @@ class CrimeFragment : Fragment() {
         titleField.addTextChangedListener(titleWatcher)
         solvedCheckBox.apply {
             setOnCheckedChangeListener { _, isChecked -> crime.isSolved = isChecked }
+        }
+        dateButton.setOnClickListener{
+            DatePickerFragment().apply {
+                show(this@CrimeFragment.parentFragmentManager, DIALOG_DATE)
+            }
         }
     }
 
