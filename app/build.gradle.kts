@@ -48,6 +48,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.media3.common.ktx)
     implementation (libs.androidx.fragment.ktx)
+    implementation(libs.fragment.ktx)
     ksp (libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
