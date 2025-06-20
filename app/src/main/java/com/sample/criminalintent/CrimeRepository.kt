@@ -26,7 +26,7 @@ class CrimeRepository constructor(context: Context) {
             crimeDao.updateCrime(crime)
         }
     }
-    fun insertCrime(crime: Crime){
+    fun addCrime(crime: Crime){
         executor.execute {
             crimeDao.insertCrime(crime)
         }
