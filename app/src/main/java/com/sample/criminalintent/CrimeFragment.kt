@@ -11,13 +11,17 @@ import android.widget.CheckBox
 import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+import android.text.format.DateFormat
+import java.util.Date
 import java.util.UUID
 
 private const val TAG = "CrimeFragment"
 private const val ARG_CRIME_ID = "crime_id"
 private const val DIALOG_DATE = "dialog_date"
+private const val DATE_REQUEST = "date_requested"
+private const val  DATE_SELECT = "date_selected"
 
 class CrimeFragment : Fragment() {
 
@@ -32,6 +36,18 @@ class CrimeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         crime = Crime()
+
+        setFragmentResultListener(DATE_REQUEST){
+                key, bundle ->
+            val resultDate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                bundle.getSerializable(DATE_SELECT, Date::class.java) as Date
+            } else {
+                @Suppress("DEPRECATION")
+                bundle.getSerializable(DATE_SELECT) as Date
+            }
+            crime.date = resultDate
+            updateUI()
+        }
 
         val crimeId:UUID = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arguments?.getSerializable(ARG_CRIME_ID, UUID::class.java) as UUID
@@ -76,6 +92,8 @@ class CrimeFragment : Fragment() {
 
     private fun updateUI(){
         titleField.setText(crime.title)
+        val dateFormatted = DateFormat.getMediumDateFormat(context).format(crime.date).toString()
+        dateButton.text = dateFormatted
         dateButton.text = crime.date.toString()
         solvedCheckBox.apply {
             solvedCheckBox.isChecked = crime.isSolved
@@ -104,7 +122,7 @@ class CrimeFragment : Fragment() {
             setOnCheckedChangeListener { _, isChecked -> crime.isSolved = isChecked }
         }
         dateButton.setOnClickListener{
-            DatePickerFragment().apply {
+            DatePickerFragment.newInstance(crime.date).apply {
                 show(this@CrimeFragment.parentFragmentManager, DIALOG_DATE)
             }
         }
